@@ -14,7 +14,6 @@ router = APIRouter(
 async def user_login(user_credentials: OAuth2PasswordRequestForm = Depends()):
     print(user_credentials)
     find = await database.find_user(user_credentials.username)
-    print(find)
     if find:
         if verify(user_credentials.password, find['password']):
             access_token = create_access_token(
