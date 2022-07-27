@@ -2,7 +2,6 @@ from fastapi import Depends
 from pymongo import MongoClient
 from models import Note, NoteResult
 from datetime import datetime
-from oauth2 import get_current_user
 from util import hashpass
 
 
@@ -25,14 +24,12 @@ async def fetch_all(current_user: str):
 
 
 async def fetch_by_title(title: str, current_user: str):
-    cursor = notes_collection.find_one({"title": title, "owner": current_user})
-    return cursor
+    return notes_collection.find_one({"title": title, "owner": current_user})
 
 
 async def update_note(title: str, description: str, current_user: str):
     await notes_collection.update_one({'title': title, 'owner': current_user}, {"$set": {"description": description}})
-    document = notes_collection.find_one({"title": title})
-    return document
+    return notes_collection.find_one({"title": title})
 
 
 async def remove_note(title: str, current_user: str):
@@ -59,5 +56,4 @@ async def create_user(user: dict):
 
 
 async def find_user(email: str):
-    cursor = users_collection.find_one({"email": email})
-    return cursor
+    return users_collection.find_one({"email": email})
