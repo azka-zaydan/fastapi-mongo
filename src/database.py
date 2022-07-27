@@ -1,8 +1,7 @@
-from fastapi import Depends
 from pymongo import MongoClient
-from models import Note, NoteResult
+from models import NoteResult
 from datetime import datetime
-from util import hashpass
+from util import hashpass, verify
 
 
 mongo = MongoClient(
@@ -45,15 +44,34 @@ async def create_note(note: dict, current_user: str):
 
 
 async def create_user(user: dict):
-    user['password'] = hashpass(user['password'])
-    user['created_at'] = datetime.now()
-    # print(type(user))
     user_exist = users_collection.find_one({"email": user['email']})
     if user_exist:
         return None
+    user['password'] = hashpass(user['password'])
+    user['created_at'] = datetime.now()
+    # print(type(user))
     users_collection.insert_one(user)
     return user
 
 
 async def find_user(email: str):
     return users_collection.find_one({"email": email})
+
+
+async def change_user_password(passwords: dict, current_user: str):
+    print(current_user)
+    find = users_collection.find_one({"email": current_user})
+
+    if find:
+        if verify(passwords['old_password'], find['password']):
+            new_pass = hashpass(passwords['new_password'])
+            users_collection.update_one({"email": current_user}, {
+                                        '$set': {'password': new_pass}})
+            return "Password Updated"
+        return None
+    return None
+
+
+async def delete_user(email: str):
+    users_collection.delete_one({"email": email})
+    return True
