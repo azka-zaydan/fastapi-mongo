@@ -72,6 +72,9 @@ async def change_user_password(passwords: dict, current_user: str):
 
 
 async def delete_user(email: str):
-    users_collection.delete_one({"email": email})
-    notes_collection.delete_many({"owner": email})
-    return True
+    find = users_collection.find_one({'email': email})
+    if find:
+        users_collection.delete_one({"email": email})
+        notes_collection.delete_many({"owner": email})
+        return "User gone"
+    return None
