@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from fastapi import APIRouter, Depends, HTTPException
 import database
 from models import Note, NoteResult
@@ -11,14 +11,15 @@ router = APIRouter(
 
 
 @router.get('/', response_model=List[NoteResult])
-async def get_all_notes(current_user: str = Depends(get_current_user)):
-    response = await database.fetch_all(current_user)
+async def get_all_notes(limit: int = 0, skip: int = 0, current_user: str = Depends(get_current_user)):
+    response = await database.fetch_all(current_user, limit, skip)
     return response
 
 
-@router.get('/{title}', response_model=NoteResult)
-async def get_note_by_title(title: str, current_user: str = Depends(get_current_user)):
-    response = await database.fetch_by_title(title, current_user)
+@router.get('/{title}', response_model=List[NoteResult])
+async def get_note_by_title(title: str, limit: int = 0, skip: int = 0, current_user: str = Depends(get_current_user)):
+    response = await database.fetch_by_title(title, current_user, limit, skip)
+    print(response)
     if response:
         return response
     raise HTTPException(404, 'Item not found')

@@ -15,17 +15,25 @@ users_collection = database['users']
 users_collection.create_index('email', unique=True)
 
 
-async def fetch_all(current_user: str):
+async def fetch_all(current_user: str, limit: int, skip: int):
     notes = []
-    cursor = notes_collection.find({'owner': current_user})
+    cursor = notes_collection.find(
+        {'owner': current_user}).limit(limit).skip(skip)
     for doc in cursor:
         notes.append(
             NoteResult(**doc))
     return notes
 
 
-async def fetch_by_title(title: str, current_user: str):
-    return notes_collection.find_one({"title": title, "owner": current_user})
+async def fetch_by_title(title: str, current_user: str, limit: int, skip: int):
+    cursor = notes_collection.find(
+        {'title': {"$regex": title}, "owner": current_user}).limit(limit).skip(skip)
+    notes = []
+    for doc in cursor:
+        notes.append(
+            NoteResult(**doc)
+        )
+    return notes
 
 
 async def update_note(title: str, description: str, current_user: str):
