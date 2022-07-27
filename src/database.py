@@ -59,7 +59,6 @@ async def find_user(email: str):
 
 
 async def change_user_password(passwords: dict, current_user: str):
-    print(current_user)
     find = users_collection.find_one({"email": current_user})
 
     if find:
