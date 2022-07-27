@@ -1,16 +1,18 @@
+from fastapi import HTTPException
 from pymongo import MongoClient
 from models import NoteResult
 from datetime import datetime
 from util import hashpass, verify
-
+from pymongo.errors import DuplicateKeyError
 
 mongo = MongoClient(
     "mongodb://localhost:27017/", username='azka', password='1415')
 
-database = mongo['pymongo']
+database = mongo['noteapp']
 
 notes_collection = database['notes']
 users_collection = database['users']
+users_collection.create_index('email', unique=True)
 
 
 async def fetch_all(current_user: str):
@@ -44,13 +46,13 @@ async def create_note(note: dict, current_user: str):
 
 
 async def create_user(user: dict):
-    user_exist = users_collection.find_one({"email": user['email']})
-    if user_exist:
-        return None
     user['password'] = hashpass(user['password'])
     user['created_at'] = datetime.now()
     # print(type(user))
-    users_collection.insert_one(user)
+    try:
+        users_collection.insert_one(user)
+    except DuplicateKeyError:
+        raise HTTPException(404, 'User already exist')
     return user
 
 

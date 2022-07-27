@@ -39,4 +39,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme),):
                                           detail='could not validate credentials', headers={"WWW-Authenticate": "Bearer"})
     token = verify_access_token(token, credentials_exception)
     user = await database.find_user(token.email)
-    return user['email']
+    if user:
+        return user['email']
+    raise HTTPException(404, 'Please log in')
