@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from models import TokenData
-import database
+from src.models import TokenData
+import src.database as database
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 SECRET_KEY = "I LIKE DUDES "

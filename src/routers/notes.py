@@ -1,8 +1,8 @@
 from typing import List, Union
 from fastapi import APIRouter, Depends, HTTPException
-import database
-from models import Note, NoteResult
-from oauth2 import get_current_user
+import src.database as database
+from src.models import Note, NoteResult
+from src.oauth2 import get_current_user
 
 router = APIRouter(
     prefix='/notes',

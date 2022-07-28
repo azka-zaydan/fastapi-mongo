@@ -1,8 +1,8 @@
 from calendar import c
 from fastapi import APIRouter, Depends, HTTPException
-from models import EditPassword, User, UserResult
-import database
-from oauth2 import get_current_user
+from src.models import EditPassword, User, UserResult
+import src.database as database
+from src.oauth2 import get_current_user
 
 router = APIRouter(
     prefix='/user',
@@ -35,8 +35,8 @@ async def change_password(passwords: EditPassword, current_user: str = Depends(g
     raise HTTPException(404, 'Invalid credentials')
 
 
-@ router.delete('/{email}')
-async def delete_user(email: str):
+@ router.delete('/')
+async def delete_user(email: str, current_user: str = Depends(get_current_user)):
     response = await database.delete_user(email)
     if response != None:
         return response

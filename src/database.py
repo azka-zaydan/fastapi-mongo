@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from pymongo import MongoClient
-from models import NoteResult
+from src.models import NoteResult
 from datetime import datetime
-from util import hashpass, verify
+from src.util import hashpass, verify
 from pymongo.errors import DuplicateKeyError
 
 mongo = MongoClient(
@@ -37,7 +37,8 @@ async def fetch_by_title(title: str, current_user: str, limit: int, skip: int):
 
 
 async def update_note(title: str, description: str, current_user: str):
-    await notes_collection.update_one({'title': title, 'owner': current_user}, {"$set": {"description": description}})
+    notes_collection.update_one({'title': title, 'owner': current_user}, {
+                                "$set": {"description": description}})
     return notes_collection.find_one({"title": title})
 
 
@@ -77,7 +78,7 @@ async def change_user_password(passwords: dict, current_user: str):
             users_collection.update_one({"email": current_user}, {
                                         '$set': {'password': new_pass}})
             return "Password Updated"
-        return None
+        raise HTTPException(404, "Wrong Old Password")
     return None
 
 
@@ -87,4 +88,4 @@ async def delete_user(email: str):
         users_collection.delete_one({"email": email})
         notes_collection.delete_many({"owner": email})
         return "User gone"
-    return None
+    raise HTTPException("User Not Found")
