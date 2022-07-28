@@ -14,4 +14,5 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 COPY ./src /code/src
 
 # 
-CMD ["python3","server.py"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "80"]
+
