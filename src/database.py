@@ -1,10 +1,10 @@
 from fastapi import HTTPException
-from pymongo import MongoClient
+from pymongo import CursorType, MongoClient
 from src.models import NoteResult
 from datetime import datetime
 from src.util import hashpass, verify
 from pymongo.errors import DuplicateKeyError
-
+from pymongo.cursor import Cursor
 mongo = MongoClient(
     "mongodb://localhost:27017/", username='azka', password='1415')
 
@@ -15,25 +15,26 @@ users_collection = database['users']
 users_collection.create_index('email', unique=True)
 
 
-async def fetch_all(current_user: str, limit: int, skip: int):
+async def db_parser(cursor: Cursor):
     notes = []
-    cursor = notes_collection.find(
-        {'owner': current_user}).limit(limit).skip(skip)
     for doc in cursor:
         notes.append(
             NoteResult(**doc))
     return notes
 
 
+async def fetch_all(current_user: str, limit: int, skip: int):
+    cursor = notes_collection.find(
+        {'owner': current_user}).limit(limit).skip(skip)
+    result = await db_parser(cursor)
+    return result
+
+
 async def fetch_by_title(title: str, current_user: str, limit: int, skip: int):
     cursor = notes_collection.find(
         {'title': {"$regex": title}, "owner": current_user}).limit(limit).skip(skip)
-    notes = []
-    for doc in cursor:
-        notes.append(
-            NoteResult(**doc)
-        )
-    return notes
+    result = await db_parser(cursor)
+    return result
 
 
 async def update_note(title: str, description: str, current_user: str):
