@@ -42,8 +42,10 @@ async def update_note(title: str, description: str, current_user: str):
 
 async def remove_note(title: str, current_user: str):
     ''' remove note '''
-    notes_collection.delete_one({"title": title, 'owner': current_user})
-    return True
+    find = notes_collection.delete_one({"title": title, 'owner': current_user})
+    if find:
+        return True
+    raise HTTPException(404, "Item not found")
 
 
 async def create_note(note: dict, current_user: str):

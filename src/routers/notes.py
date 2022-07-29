@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 import src.database as database
 from src.models import Note, NoteResult
@@ -36,9 +36,10 @@ async def update_note(note_title: str, data: str, current_user: str = Depends(ge
 
 
 @router.delete('/{title}')
-async def delete_note(note_title: str, current_user: str = Depends(get_current_user)):
+async def delete_note(title: str, current_user: str = Depends(get_current_user)):
     ''' delete note '''
-    response = await database.remove_note(note_title, current_user)
+    print(title)
+    response = await database.remove_note(title, current_user)
     if response:
         return 'item deleted'
     raise HTTPException(404, 'Item not found')
