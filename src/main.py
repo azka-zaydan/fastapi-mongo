@@ -12,4 +12,5 @@ app.include_router(auth.router)
 
 @app.get('/')
 async def get_root():
+    ''' redirect to /docs '''
     return RedirectResponse('/docs')

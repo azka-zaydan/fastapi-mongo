@@ -12,7 +12,7 @@ router = APIRouter(
 
 @router.post('/', response_model=UserResult)
 async def create_user(user: User):
-
+    ''' create user '''
     result = await database.create_user(user.dict())
     if result:
         return result
@@ -21,6 +21,7 @@ async def create_user(user: User):
 
 @router.get('/{email}', response_model=UserResult)
 async def find_user_by_email(email: str):
+    ''' find user by email '''
     response = await database.find_user(email)
     if response:
         return response
@@ -29,6 +30,7 @@ async def find_user_by_email(email: str):
 
 @router.put('/',)
 async def change_password(passwords: EditPassword, current_user: str = Depends(get_current_user)):
+    ''' change user passowrd '''
     response = await database.change_user_password(passwords.dict(), current_user)
     if response:
         return response
@@ -37,6 +39,7 @@ async def change_password(passwords: EditPassword, current_user: str = Depends(g
 
 @ router.delete('/')
 async def delete_user(email: str, current_user: str = Depends(get_current_user)):
+    ''' delete user '''
     response = await database.delete_user(email)
     if response != None:
         return response

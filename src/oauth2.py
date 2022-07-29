@@ -12,6 +12,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 def create_access_token(data: dict):
+    ''' create access token for auth'''
     to_encode = data.copy()
     expire = str(datetime.utcnow() +
                  timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
@@ -23,6 +24,7 @@ def create_access_token(data: dict):
 
 
 def verify_access_token(token: str, credentials_exception: HTTPException):
+    ''' verify access token '''
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_email: str = payload.get('user_email')
@@ -35,6 +37,7 @@ def verify_access_token(token: str, credentials_exception: HTTPException):
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme),):
+    ''' get current user '''
     credentials_exception = HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                                           detail='could not validate credentials', headers={"WWW-Authenticate": "Bearer"})
     token = verify_access_token(token, credentials_exception)

@@ -12,6 +12,7 @@ router = APIRouter(
 
 @router.post('/')
 async def user_login(user_credentials: OAuth2PasswordRequestForm = Depends()):
+    ''' user login '''
     find = await database.find_user(user_credentials.username)
     if find:
         if verify(user_credentials.password, find['password']):
