@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from pymongo import CursorType, MongoClient
+from pymongo import MongoClient
 from src.models import NoteResult
 from datetime import datetime
 from src.util import hashpass, verify
