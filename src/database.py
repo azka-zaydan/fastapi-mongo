@@ -60,7 +60,6 @@ async def create_user(user: dict):
     ''' create user '''
     user['password'] = hashpass(user['password'])
     user['created_at'] = datetime.now()
-    # print(type(user))
     try:
         users_collection.insert_one(user)
     except DuplicateKeyError:
@@ -76,7 +75,6 @@ async def find_user(email: str):
 async def change_user_password(passwords: dict, current_user: str):
     ''' change user password '''
     find = users_collection.find_one({"email": current_user})
-
     if find:
         if verify(passwords['old_password'], find['password']):
             new_pass = hashpass(passwords['new_password'])
