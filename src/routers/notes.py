@@ -38,7 +38,6 @@ async def update_note(note_title: str, data: str, current_user: str = Depends(ge
 @router.delete('/{title}')
 async def delete_note(title: str, current_user: str = Depends(get_current_user)):
     ''' delete note '''
-    print(title)
     response = await database.remove_note(title, current_user)
     if response:
         return 'item deleted'

@@ -19,6 +19,7 @@ class User(BaseModel):
     ''' user creation model '''
     email: EmailStr
     password: str
+    role: str = 'user'
 
 
 class UserResult(BaseModel):

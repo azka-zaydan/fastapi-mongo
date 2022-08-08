@@ -5,11 +5,15 @@ from datetime import datetime
 from src.util import hashpass, verify
 from pymongo.errors import DuplicateKeyError
 from pymongo.cursor import Cursor
+from dotenv import find_dotenv, load_dotenv
+import os
+
+load_dotenv(find_dotenv())
 
 mongo = MongoClient(
-    "mongodb://localhost:27017/", username='azka', password='1415')
+    host=os.getenv('DATABASE_URL'), username=os.getenv('DATABASE_USERNAME'), password=os.getenv('DATABASE_PASSWORD'))
 
-database = mongo['noteapp']
+database = mongo['newnotes']
 
 notes_collection = database['notes']
 users_collection = database['users']
@@ -25,10 +29,16 @@ async def db_parser(cursor: Cursor):
     return notes
 
 
-async def fetch_all(current_user: str, limit: int, skip: int, title: str):
+async def fetch_all(current_user: dict, limit: int, skip: int, title: str):
     ''' fetch every note from owner '''
+    if current_user['role'] == 'admin' or 'super_admin':
+        cursor = notes_collection.find(
+            {'title': {"$regex": title}}).limit(limit).skip(skip)
+        result = await db_parser(cursor)
+        return result
+
     cursor = notes_collection.find(
-        {'title': {"$regex": title}, 'owner': current_user}).limit(limit).skip(skip)
+        {'title': {"$regex": title}, 'owner': current_user['email']}).limit(limit).skip(skip)
     result = await db_parser(cursor)
     return result
 
@@ -58,6 +68,10 @@ async def create_note(note: dict, current_user: str):
 
 async def create_user(user: dict):
     ''' create user '''
+
+    if user['role'] == 'super_admin':
+        raise HTTPException(404, f'you do not have access you are a admin')
+
     user['password'] = hashpass(user['password'])
     user['created_at'] = datetime.now()
     try:

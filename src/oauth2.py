@@ -4,11 +4,15 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from src.models import TokenData
 import src.database as database
+from dotenv import load_dotenv, find_dotenv
+import os
+
+load_dotenv(find_dotenv())
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
-SECRET_KEY = "I LIKE DUDES "
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHM = os.getenv('ALGORITHM')
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES'))
 
 
 def create_access_token(data: dict):
@@ -43,5 +47,5 @@ async def get_current_user(token: str = Depends(oauth2_scheme),):
     token = verify_access_token(token, credentials_exception)
     user = await database.find_user(token.email)
     if user:
-        return user['email']
+        return user
     raise HTTPException(404, 'Please log in')
