@@ -13,11 +13,10 @@ router = APIRouter(
 @router.post('/', response_model=UserResult)
 async def create_user(user: User, current_user=Depends(get_current_user)):
     ''' create user '''
-    print(current_user)
     if current_user['role'] == 'user':
         raise HTTPException(404, 'you dont have access')
 
-    result = await database.create_user(user.dict())
+    result = await database.create_user(user.dict(), current_user['role'])
     if result:
         return result
     raise HTTPException(404, 'User already exist')

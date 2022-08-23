@@ -66,10 +66,10 @@ async def create_note(note: dict, current_user: str):
     return note
 
 
-async def create_user(user: dict):
+async def create_user(user: dict, current_user: str):
     ''' create user '''
 
-    if user['role'] == 'super_admin':
+    if user['role'] == 'super_admin' and current_user == 'admin':
         raise HTTPException(404, f'you do not have access you are a admin')
 
     user['password'] = hashpass(user['password'])
