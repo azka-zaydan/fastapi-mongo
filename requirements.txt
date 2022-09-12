@@ -1,5 +1,4 @@
 anyio==3.6.1
-apturl==0.5.2
 attrs==19.3.0
 Authlib==1.0.1
 autopep8==1.6.0
