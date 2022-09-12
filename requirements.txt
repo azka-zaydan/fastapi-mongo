@@ -14,7 +14,6 @@ colorama==0.4.3
 configobj==5.0.6
 cryptography==37.0.4
 dbus-python==1.2.16
-defer==1.0.6
 distro==1.4.0
 dnspython==1.16.0
 docker==4.1.0
