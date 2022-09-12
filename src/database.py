@@ -45,14 +45,14 @@ async def fetch_all(current_user: dict, limit: int, skip: int, title: str):
 
 async def update_note(title: str, description: str, current_user: str):
     ''' update note '''
-    notes_collection.update_one({'title': title, 'owner': current_user}, {
+    notes_collection.update_one({'title': title, 'owner': current_user['email']}, {
                                 "$set": {"description": description}})
     return notes_collection.find_one({"title": title})
 
 
-async def remove_note(title: str, current_user: str):
+async def remove_note(title: str, current_user: dict):
     ''' remove note '''
-    find = notes_collection.delete_one({"title": title, 'owner': current_user})
+    find = notes_collection.delete_one({"title": title, 'owner': current_user['email']})
     if find:
         return True
     raise HTTPException(404, "Item not found")
@@ -61,7 +61,8 @@ async def remove_note(title: str, current_user: str):
 async def create_note(note: dict, current_user: str):
     ''' create note '''
     note['created_at'] = datetime.now()
-    note['owner'] = current_user
+    note['owner'] = current_user['email']
+    print(note)
     notes_collection.insert_one(note)
     return note
 
@@ -86,9 +87,9 @@ async def find_user(email: str):
     return users_collection.find_one({"email": email})
 
 
-async def change_user_password(passwords: dict, current_user: str):
+async def change_user_password(passwords: dict, current_user: dict):
     ''' change user password '''
-    find = users_collection.find_one({"email": current_user})
+    find = users_collection.find_one({"email": current_user['email']})
     if find:
         if verify(passwords['old_password'], find['password']):
             new_pass = hashpass(passwords['new_password'])
