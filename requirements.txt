@@ -5,7 +5,6 @@ autopep8==1.6.0
 bcrypt==3.1.7
 beautifulsoup4==4.8.2
 blinker==1.4
-Brlapi==0.7.0
 cached-property==1.5.1
 certifi==2019.11.28
 cffi==1.15.1
