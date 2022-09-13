@@ -31,16 +31,15 @@ async def db_parser(cursor: Cursor):
 
 async def fetch_all(current_user: dict, limit: int, skip: int, title: str):
     ''' fetch every note from owner '''
-    if current_user['role'] == 'admin' or current_user['role'] == 'super_admin':
+    if current_user['role'] == 'user':
         cursor = notes_collection.find(
-            {'title': {"$regex": title}}).limit(limit).skip(skip)
+            {'title': {"$regex": title},'owner':current_user['email']}).limit(limit).skip(skip)
         result = await db_parser(cursor)
         return result
-    else:
-        cursor = notes_collection.find(
-            {'title': {"$regex": title}, 'owner': current_user['email']}).limit(limit).skip(skip)
-        result = await db_parser(cursor)
-        return result
+    cursor = notes_collection.find(
+        {'title': {"$regex": title}}).limit(limit).skip(skip)
+    result = await db_parser(cursor)
+    return result
 
 
 async def update_note(title: str, description: str, current_user: str):
