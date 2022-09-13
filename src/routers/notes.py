@@ -10,14 +10,14 @@ router = APIRouter(
 )
 
 
-@router.get('/', response_model=List[NoteResult])
+@router.get('', response_model=List[NoteResult])
 async def get_all_notes(title: str = '', limit: int = 0, skip: int = 0, current_user: dict = Depends(get_current_user)):
     ''' fetch all notes '''
     response = await database.fetch_all(current_user, limit, skip, title)
     return response
 
 
-@router.post('/', response_model=NoteResult)
+@router.post('', response_model=NoteResult)
 async def post_note(note: Note, current_user: dict = Depends(get_current_user)):
     ''' post new note '''
     response = await database.create_note(note.dict(), current_user)
